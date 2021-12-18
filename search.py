@@ -2,7 +2,7 @@ import sqlite3
 import tkinter
 win=tkinter.Tk()
 
-db = sqlite3.connect('TEST1.db')
+db = sqlite3.connect('TEST.db')
 cursor=db.cursor()
 
 def setOpject():
