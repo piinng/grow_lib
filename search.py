@@ -4,7 +4,46 @@ win=tkinter.Tk()
 
 db = sqlite3.connect('TEST.db')
 cursor=db.cursor()
-
+hart=["簡單","適中","困難"]
+T=["上旬","中旬","下旬"]
+def CurSelet(evt):
+    deta.delete(0,'end')
+    lineNum=int(listbox.curselection()[0])
+    lineDeta=searchlist[lineNum]
+    print(searchlist)
+    print(lineDeta)
+    for i in lineDeta:
+        print(type(i))
+    ################################
+    a="ID："+str(lineDeta[0])
+    deta.insert('end',a)
+    a="植物名稱："+str(lineDeta[1])
+    deta.insert('end',a)
+    a="敘述："+str(lineDeta[2])
+    deta.insert('end',a)
+    a="科別："+str(lineDeta[3])
+    deta.insert('end',a)
+    a="播種期："+str(lineDeta[4])+"月"+str(T[lineDeta[5]-1])+"~"+str(lineDeta[6])+"月"+str(T[lineDeta[7]-1])
+    deta.insert('end',a)
+    a="收割期："+str(lineDeta[8])+"月"+str(T[lineDeta[9]-1])+"~"+str(lineDeta[10])+"月"+str(T[lineDeta[11]-1])
+    deta.insert('end',a)
+    a="難易度："+str(hart[lineDeta[12]-1])
+    deta.insert('end',a)
+    if lineDeta[14]==lineDeta[15]:
+        a="連作間隔時間："+"間隔"+str(lineDeta[14])+"年"
+        deta.insert('end',a)
+    else:
+        a="連作間隔時間："+"間隔"+str(lineDeta[14])+"~"+str(lineDeta[15])+"年"
+        deta.insert('end',a)
+    a="溫度："+"攝氏"+str(lineDeta[16])+"~"+str(lineDeta[17])+"度"
+    deta.insert('end',a)
+    if lineDeta[18]>0:
+        a="盆箱大小："+str(lineDeta[18])+"公升以上"
+        deta.insert('end',a)
+    else:
+        a="盆箱大小："+"無法盆箱栽培"
+        deta.insert('end',a)
+    
 def setOpject():
     global name
     name=tkinter.StringVar()
@@ -19,6 +58,7 @@ def setOpject():
     global size
     size=tkinter.IntVar()
     global listbox
+    global deta
     
     e1=tkinter.Entry(win,textvariable=name)#名稱
     e5=tkinter.Entry(win,textvariable=SM)#播種月份
@@ -34,7 +74,8 @@ def setOpject():
     l8=tkinter.Label(text='溫度')#溫度
     l9=tkinter.Label(text='盆箱大小')#盆箱大小
     
-    listbox=tkinter.Listbox(win,width=130)
+    listbox=tkinter.Listbox(win,width=40)
+    deta=tkinter.Listbox(win,width=80)
     
     e1.grid(row=1,column=0)
     e5.grid(row=1,column=1)
@@ -49,13 +90,18 @@ def setOpject():
     l7.grid(row=0,column=3)
     l8.grid(row=0,column=4)
     l9.grid(row=0,column=5)
-    listbox.grid(row=2,column=0,columnspan=7)
+
+    listbox.grid(row=2,column=0,columnspan=2)
+    deta.grid(row=2,column=2,columnspan=4)
+    listbox.bind('<<ListboxSelect>>',CurSelet)
     
+
     btn=tkinter.Button(win, text="search", command=search)
     btn.grid(row=1,column=6)
     
 def search():
     #名稱
+    listbox.delete(0,'end')
     s="SELECT * FROM FV WHERE NAME LIKE '%"+name.get()+"%';"
     cursor.execute(s)
     searchName=set(cursor.fetchall())
@@ -135,16 +181,16 @@ def search():
         print(searchSize)
     
     searchResult=searchName&searchSM&searchRM&searchDifficulty&searchTemp&searchSize
-    print()
-    print()
-    print()
-    for n in searchResult:
+    global searchlist
+    searchlist=list(searchResult)
+    searchlist.sort()
+    for n in searchlist:
         print(n[1])
-        listbox.insert('end',n)
+        a=str(n[0])+n[1]+'：'+n[2]
+        listbox.insert('end',a)
 
-#======================================================
 setOpject()
 
-#db.close()
 win.mainloop()
+db.close()
 
